@@ -190,12 +190,28 @@ body{padding:16px;overflow:hidden}
 body.narrow .side{display:none}
 body.narrow .fab{display:grid}
 /* real phones: full screen, no frame */
-body.full{padding:0;display:block;background:var(--bg)}
+body.full{padding:0;display:block;background:var(--bg);position:fixed;inset:0;overscroll-behavior:none}
+body.full .side{display:none}
 body.full .pbox{width:100%;height:100vh;height:100dvh}
 body.full .phone{position:relative;left:0;top:0;transform:none!important;width:100%;height:100%;border-radius:0;box-shadow:none}
 body.full .notch{display:none}
-body.full .screen{padding-top:20px}
+body.full .screen{padding:calc(40px + env(safe-area-inset-top)) 18px calc(16px + env(safe-area-inset-bottom));overflow-y:auto;scrollbar-width:none}
+body.full .screen::-webkit-scrollbar{display:none}
+body.full .scroll{margin:0 -18px;padding:0 18px;overflow:visible;flex:none}
+body.full .mwrap .mascot{max-height:26vh;max-height:26dvh;width:auto}
+body.full .scard .mascot{max-height:20vh;max-height:20dvh;width:auto}
+body.full .stack{min-height:min(330px,46dvh)}
+body.full h1{font-size:25px}
+body.full .qtitle{font-size:21px}
+body.full .fab{display:flex;top:calc(6px + env(safe-area-inset-top));left:50%;right:auto;transform:translateX(-50%);width:auto;height:28px;border-radius:999px;padding:0 12px;gap:6px;
+  align-items:center;font:800 12px 'Nunito',system-ui,sans-serif;background:rgba(53,51,51,.85)}
+body.full .fab svg{width:14px;height:14px}
+body.full .mobmenu{left:50%;right:auto;transform:translateX(-50%);top:calc(40px + env(safe-area-inset-top))}
+body.full .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
+body.full .sheet{padding-bottom:calc(24px + env(safe-area-inset-bottom));max-height:88dvh;overflow-y:auto}
 .fab{display:none;position:fixed;right:12px;top:12px;z-index:70;width:40px;height:40px;border-radius:50%;border:none;background:var(--text);color:#fff;place-items:center}
 .fab svg{width:20px;height:20px}
+.fablbl{display:none}
+body.full .fablbl{display:inline}
 .mobmenu{position:fixed;right:12px;top:60px;z-index:70;background:var(--card);border-radius:20px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:6px;width:250px}
 .mobmenu button{border:none;background:var(--bg);border-radius:12px;padding:10px;text-align:left;font-weight:800;font-size:14px}

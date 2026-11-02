@@ -681,9 +681,9 @@ $('#fab').onclick=()=>{
 function fit(){
   const b=document.body, ph=$('#phone'), box=$('#pbox');
   const W=innerWidth, H=innerHeight;
-  const full = matchMedia('(pointer:coarse)').matches && W<=500;
+  const full = W<=600;
   b.classList.toggle('full',full);
-  if(full){ph.style.transform='';box.style.width='';box.style.height='';return}
+  if(full){b.classList.remove('narrow');ph.style.transform='';box.style.width='';box.style.height='';return}
   const PW=414, PH=868; // phone + frame ring
   let k=Math.min(1,(H-32)/PH);
   const narrow = W < PW*k+32+40+300;
