@@ -179,6 +179,23 @@ textarea.txt{resize:none;min-height:96px}
 .weekly{white-space:nowrap}
 .banner span{font-size:13px;font-weight:700}
 
+.entry{padding:0;overflow:hidden}
+.entry summary{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;list-style:none}
+.entry summary::-webkit-details-marker{display:none}
+.entry summary>i{width:36px;height:36px;border-radius:50%;flex:none}
+.entry summary small{display:block;color:var(--muted);font-size:13px;font-weight:700}
+.entry .when{font-size:11px;font-weight:800;color:var(--muted);text-align:right;max-width:82px;line-height:1.25}
+.entry .chev{font-size:14px;color:var(--muted);transition:transform .2s}
+.entry[open] .chev{transform:rotate(180deg)}
+.ebody{padding:0 14px 16px;border-top:2px dashed var(--line)}
+.elabel{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin:14px 0 6px}
+.arow{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #F0EAE1;font-size:14px}
+.arow:last-of-type{border-bottom:none}
+.arow span{width:112px;flex:none;color:var(--muted);font-weight:700}
+.arow b{flex:1;font-weight:800;line-height:1.35}
+.arow b i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.arow em{display:block;font-style:normal;font-weight:600;color:var(--muted);margin-top:2px}
+.etext{font-size:14px;line-height:1.5;font-weight:600}
 .legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:10px}
 .legend span{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
 .legend i{width:12px;height:12px;border-radius:50%}

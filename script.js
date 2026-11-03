@@ -25,41 +25,41 @@ const G = (m,f)=> state.gender==='f'?f:m;
 
 /* daily questions */
 function QUESTIONS(){ return [
- {type:'slider', title:G('Сколько ты спал?','Сколько ты спала?'), opts:[
+ {type:'slider', title:G('Сколько ты спал?','Сколько ты спала?'), qs:'Сон', opts:[
    {l:'Меньше 4 часов',short:'< 4 ч',p:'vyaly',mood:'Вялый',c:C.grey, cat:{sleep:2}},
    {l:'5–7 часов',short:'5–7 ч',p:'sleep',mood:'Спящий',c:C.purple, cat:{sleep:2}},
    {l:'8–9 часов',short:'8–9 ч',p:'bodr',mood:'Бодрый',c:C.yellow, cat:{sport:1,checkup:1}},
    {l:'Больше 10 часов',short:'10+ ч',p:'calmSleep',mood:'Спокойный',c:C.green, cat:{sport:1,checkup:1}} ], init:2},
- {type:'slider', title:'Охарактеризуй качество сегодняшнего сна', opts:[
+ {type:'slider', title:'Охарактеризуй качество сегодняшнего сна', qs:'Качество сна', opts:[
    {l:G('Часто просыпался','Часто просыпалась'),short:'Беспокойный',p:'vyaly',mood:'Вялый',c:C.grey, cat:{sleep:2}},
    {l:G('Спал спокойно','Спала спокойно'),short:'Спокойный',p:'calmSleep',mood:'Спящий',c:C.purple, cat:{sport:1}} ], init:1},
- {type:'slider', title:'Как ты чувствуешь себя физически?', opts:[
+ {type:'slider', title:'Как ты чувствуешь себя физически?', qs:'Самочувствие', opts:[
    {l:'Очень вялый и больной',short:'Болею',p:'sick',mood:'Болеет',c:C.olive, cat:{sleep:2,reading:1}},
    {l:'Что-то болит',short:'Болит',p:'hurt',mood:'Что-то болит',c:C.rose, cat:{sleep:1,reading:1}},
    {l:'Немного устал'+G('','а')+', но норм',short:'Норм',p:'normik',mood:'Нормик',c:C.green, cat:{meditation:2}},
    {l:'Бодрый и заряженный',short:'Бодро',p:'bodr',mood:'Бодрый',c:C.yellow, cat:{sport:2}} ], init:2},
- {type:'slider', title:'Насколько загруженным был твой день?', opts:[
+ {type:'slider', title:'Насколько загруженным был твой день?', qs:'Загруженность', opts:[
    {l:'Дел почти не было',short:'Почти нет',p:'calm',mood:'Спокойствие',c:C.green, cat:{sport:1,hobby:1,concert:1,exhibition:1}},
    {l:'Обычная нагрузка',short:'Обычно',p:'normal',mood:'Бодрость',c:C.yellow, cat:{sport:1,hobby:1,concert:1,exhibition:1}},
    {l:'Много дел',short:'Много',p:'tired',mood:'Усталость',c:C.grey, cat:{sleep:1,reading:1,meditation:1}},
    {l:'Очень много дел',short:'Очень много',p:'stress',mood:'Стресс',c:C.red, cat:{sleep:1,reading:1,meditation:2}} ], init:1},
- {type:'slider', title:'Оцени своё общение сегодня', opts:[
+ {type:'slider', title:'Оцени своё общение сегодня', qs:'Общение', opts:[
    {l:'Злой',short:'Злюсь',p:'angry',mood:'Злой',c:C.red, cat:{reading:1,meditation:2}},
    {l:'Уставший и вымотанный',short:'Вымотан'+G('','а'),p:'tired',mood:'Усталость',c:C.grey, cat:{meditation:1,sleep:1,reading:1}},
    {l:'Одинокий',short:'Одиноко',p:'lonely',mood:'Одинокий',c:C.blue, cat:{hobby:1,concert:1,exhibition:1}},
    {l:'Общительный и мега-весёлый',short:'Весело',p:'social',mood:'Общительный',c:C.violet, cat:{sport:2}} ], init:3},
- {type:'cards', mode:'single', title:G('Заботился ли ты о себе сегодня?','Заботилась ли ты о себе сегодня?'), opts:[
+ {type:'cards', mode:'single', title:G('Заботился ли ты о себе сегодня?','Заботилась ли ты о себе сегодня?'), qs:'Забота о себе', opts:[
    {l:G('Да, я уделил себе достаточно времени','Да, я уделила себе достаточно времени'),p:'bodr',c:C.yellow,bg:'var(--sand)',cat:{sport:1,hobby:1}},
    {l:'Да, но совсем немного',p:'calm',c:C.green,bg:'var(--mint)',cat:{meditation:1,reading:1}},
    {l:'Нет, сегодня не удалось',p:'tired',c:C.grey,bg:'var(--peach)',cat:{meditation:1,reading:1}},
    {l:'Я вообще никогда не забочусь о себе',p:'lonely',c:C.blue,bg:'var(--lav)',cat:{sleep:1,reading:1,meditation:1}} ]},
- {type:'cards', mode:'multi', title:'Было ли что-то, что повлияло на твоё состояние?', sub:'Можно выбрать несколько', opts:[
+ {type:'cards', mode:'multi', title:'Было ли что-то, что повлияло на твоё состояние?', qs:'Что повлияло', sub:'Можно выбрать несколько', opts:[
    {l:'Да, положительно',s:'общение, встречи, хорошее расположение духа',p:'social',c:C.violet,bg:'var(--lav)',cat:{hobby:1,concert:1,exhibition:1}},
    {l:'Да, положительно',s:'выполненная задача, похвала, закрытый дедлайн, отдых',p:'bodr',c:C.yellow,bg:'var(--sand)',cat:{hobby:1,sport:1}},
    {l:'Да, отрицательно',s:'ссора, конфликт, сложная задача, неудача на работе/учёбе',p:'angry',c:C.red,bg:'var(--peach)',cat:{meditation:1,reading:1}},
    {l:'Да, отрицательно',s:'болезнь, физическое недомогание',p:'sick',c:C.olive,bg:'var(--mint)',cat:{sleep:1,checkup:2}},
    {l:'Нет',s:'ничего особенного не произошло',p:'normal',c:C.green,bg:'var(--card)',cat:{},none:true} ]},
- {type:'choice', title:'Выбери желаемый формат обратной связи', sub:'Можно выбрать один или оба', opts:[
+ {type:'choice', title:'Выбери желаемый формат обратной связи', qs:'Формат', sub:'Можно выбрать один или оба', opts:[
    {l:'Рекомендация',s:'конкретный совет, что можно сделать для себя',p:'bodr',c:C.yellow,bg:'var(--mint)',fmt:'rec'},
    {l:'Поддержка',s:'тёплые слова, когда хочется, чтобы тебя поддержали',p:'social',c:C.violet,bg:'var(--pink)',fmt:'sup'} ]},
 ];}
@@ -88,11 +88,6 @@ const state = {
   answers:{}, texts:{}, recHistory:['sport','reading'], catBias:{}, supBag:[], lastRec:null, lastFmt:'rec',
   history:[], weekly:{}, skipIdx:0,
 };
-// demo history for the last 6 days
-(function seed(){
-  const demo=[[C.green,'Спокойствие','Чтение'],[C.yellow,'Бодрость','Физическая активность'],[C.grey,'Усталость','Сон'],[C.violet,'Общительность','Поддержка'],[C.purple,'Сонливость','Сон'],[C.blue,'Одиночество','Хобби']];
-  demo.forEach((d,i)=>{const dt=new Date(today);dt.setDate(dt.getDate()-(6-i));state.history.push({date:dt,c:d[0],mood:d[1],rec:d[2]})});
-})();
 
 /* ================= HELPERS ================= */
 const $=(s,r=document)=>r.querySelector(s);
@@ -323,14 +318,28 @@ const SCREENS={
  diary(){
   setTint(C.lav);
   const items=[...state.history].reverse();
-  const el=screen(`<h1>Дневник</h1><p class="muted" style="font-weight:700;margin-bottom:12px">Твои состояния и советы</p>
+  const fmtDate=d=>d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+  const empty=`<div class="card" style="text-align:center;padding:24px 18px">
+      <div class="mwrap"><div class="bob">${catSVG(pose('calm',C.tan),130)}</div></div>
+      <b style="display:block;font-size:18px;margin-top:8px">Здесь появятся твои записи</b>
+      <p class="muted" style="font-size:14px;font-weight:700;margin:6px 0 14px">Ответь на ежедневные вопросы — и сюда сохранится твоя эмоция дня, ответы и совет, который ты получил${G('','а')}</p>
+      <button class="btn" data-daily>Записать состояние</button></div>`;
+  const entry=h=>{const R_=h.recKey?REC[h.recKey]:null;
+    return `<details class="card entry"><summary><i style="background:${h.c}"></i>
+      <span style="flex:1"><b>${h.mood}</b><small>${h.rec}</small></span><span class="when">${fmtDate(h.date)}</span><span class="chev">▾</span></summary>
+      <div class="ebody">
+        <p class="elabel">Твои ответы</p>
+        ${h.answers.map(a=>`<div class="arow"><span>${a.q}</span><b><i style="background:${a.c||'#ccc'}"></i>${a.a}${a.own?`<em>«${a.own}»</em>`:''}</b></div>`).join('')}
+        ${R_?`<p class="elabel">Совет · ${R_.t}</p><p class="etext">${R_.txt()}</p>`:''}
+        ${h.supIdx!=null&&h.fmt!=='rec'?`<p class="elabel">Поддержка</p><p class="etext">${SUP[h.supIdx]()}</p>`:''}
+      </div></details>`};
+  const el=screen(`<h1>Дневник</h1><p class="muted" style="font-weight:700;margin-bottom:12px">Твои записи после ежедневных вопросов</p>
    <div class="scroll"><div style="display:flex;flex-direction:column;gap:10px">
-   ${items.map(h=>`<div class="card" style="display:flex;gap:12px;align-items:center;padding:14px"><i style="width:36px;height:36px;border-radius:50%;background:${h.c};flex:none"></i>
-     <div style="flex:1"><b>${h.mood}</b><p class="muted" style="font-size:13px;font-weight:700">${h.rec}</p></div>
-     <span class="muted" style="font-size:12px;font-weight:800">${h.date.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}</span></div>`).join('')}
+   ${items.length?items.map(entry).join(''):empty}
    </div>
    <div class="card" style="margin-top:14px"><b>Цвета эмоций</b><div class="legend">${EMO.map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join('')}</div></div>
    </div>${navHTML('diary')}`);
+  el.querySelector('[data-daily]')?.addEventListener('click',startDaily);
   bindNav(el);
  },
 };
@@ -562,7 +571,11 @@ function commitResult(){
   if(RESULT.fmt!=='sup'){state.recHistory.push(RESULT.recs.order[RESULT.ri]); state.lastRec=RESULT.recs.order[RESULT.ri]; state.rated=false}
   else {state.lastRec=null}
   state.lastPose=m.pose;
-  const ent={date:new Date(today),c:m.c,mood:m.name,rec:title};
+  const answers=Q.map((q,i)=>{const a=state.answers[i]; if(a==null)return null;
+    const arr=Array.isArray(a)?a:[a]; const os=arr.map(x=>q.opts[x]).filter(Boolean);
+    return {q:q.qs||q.title, a:os.map(o=>o.s&&q.type==='cards'?o.l+': '+o.s:o.l).join('; '), c:os[0]?.c, own:state.texts[i]||''}}).filter(Boolean);
+  const ent={date:new Date(),c:m.c,mood:m.name,rec:title,fmt:RESULT.fmt,recKey:RESULT.fmt!=='sup'?RESULT.recs.order[RESULT.ri]:null,supIdx:RESULT.sup,answers};
+  RESULT.entry=ent;
   const li=state.history.findIndex(h=>h.date.toDateString()===today.toDateString());
   if(li>=0) state.history[li]=ent; else state.history.push(ent);
 }
@@ -600,7 +613,7 @@ SCREENS.result=function(){
   el.querySelector('[data-homeb]').onclick=()=>go('home',1);
   el.querySelector('[data-home]').onclick=()=>{toast(RESULT.fmt==='sup'?'Обнимаем ♡':'Сохранили в дневник ♡');go('home')};
   el.querySelector('[data-other]')?.addEventListener('click',()=>{state.recHistory.pop();RESULT.ri=(RESULT.ri+1)%RESULT.recs.order.length;commitResult();go('result')});
-  el.querySelector('[data-more]')?.addEventListener('click',()=>{RESULT.sup=pickSupport();go('result')});
+  el.querySelector('[data-more]')?.addEventListener('click',()=>{RESULT.sup=pickSupport();if(RESULT.entry)RESULT.entry.supIdx=RESULT.sup;go('result')});
   el.querySelector('[data-tix]')?.addEventListener('click',()=>toast('В прототипе — ссылка на билеты'));
   el.querySelector('[data-timer]')?.addEventListener('click',e=>{let s=300;const b=e.currentTarget;b.disabled=true;const iv=setInterval(()=>{s--;b.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')} · дыши спокойно`;if(s<=0||!document.body.contains(b))clearInterval(iv)},1000)});
 };
