@@ -59,7 +59,7 @@ function QUESTIONS(){ return [
    {l:'Да, отрицательно',s:'ссора, конфликт, сложная задача, неудача на работе/учёбе',p:'angry',c:C.red,bg:'var(--peach)',cat:{meditation:1,reading:1}},
    {l:'Да, отрицательно',s:'болезнь, физическое недомогание',p:'sick',c:C.olive,bg:'var(--mint)',cat:{sleep:1,checkup:2}},
    {l:'Нет',s:'ничего особенного не произошло',p:'normal',c:C.green,bg:'var(--card)',cat:{},none:true} ]},
- {type:'cards', mode:'single', title:'Выбери желаемый формат обратной связи', opts:[
+ {type:'choice', title:'Выбери желаемый формат обратной связи', sub:'Можно выбрать один или оба', opts:[
    {l:'Рекомендация',s:'конкретный совет, что можно сделать для себя',p:'bodr',c:C.yellow,bg:'var(--mint)',fmt:'rec'},
    {l:'Поддержка',s:'тёплые слова, когда хочется, чтобы тебя поддержали',p:'social',c:C.violet,bg:'var(--pink)',fmt:'sup'} ]},
 ];}
@@ -112,6 +112,8 @@ const ICON={
  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg>',
  paw:'<svg viewBox="0 0 24 24" fill="#E0C0AC"><circle cx="7" cy="9" r="2.2"/><circle cx="12" cy="7" r="2.2"/><circle cx="17" cy="9" r="2.2"/><path d="M12 11c3 0 5.5 2.6 5.5 5 0 1.7-1.4 2.5-2.8 2.2-1-.2-1.7-.6-2.7-.6s-1.7.4-2.7.6C7.9 18.5 6.5 17.7 6.5 16c0-2.4 2.5-5 5.5-5z"/></svg>',
  pen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+ wcheck:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
+ wx:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" width="14" height="14"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>',
 };
 
@@ -343,7 +345,7 @@ SCREENS.q=function(){
   const bar=`<div class="topbar"><button class="iconbtn" aria-label="Назад" data-back>${ICON.back}</button>
    <div class="progress">${Q.map((_,k)=>`<i class="${k<qi?'on':k===qi?'cur':''}"></i>`).join('')}</div><span class="qcount">${qi+1}/${Q.length}</span></div>`;
   const textBox = state.inputFormat==='text'?`<textarea class="txt" id="own" placeholder="Или опиши своими словами…" style="min-height:64px;margin-top:12px">${state.texts[qi]||''}</textarea>`:'';
-  if(q.type==='slider') sliderScreen(q,bar,textBox); else cardsScreen(q,bar,textBox);
+  if(q.type==='slider') sliderScreen(q,bar,textBox); else if(q.type==='choice') choiceScreen(q,bar,textBox); else cardsScreen(q,bar,textBox);
 };
 function bindCommon(el){
   el.querySelector('[data-back]').onclick=()=>{ if(qi===0) go('home',1); else {qi--;go('q',1)} };
@@ -413,6 +415,23 @@ function sliderScreen(q,bar,textBox){
   el.querySelector('[data-next]').onclick=()=>{state.answers[qi]=Math.round(target);nextQ()};
 }
 
+
+function choiceScreen(q,bar,textBox){
+  let sel=new Set(state.answers[qi]||[]);
+  const el=screen(`${bar}
+   <p class="qtitle">${q.title}</p>
+   <p class="muted" style="font-weight:700;font-size:14px">${q.sub}</p>
+   <div class="choice">${q.opts.map((o,i)=>`<button class="ch ${sel.has(i)?'sel':''}" data-i="${i}" style="background:${o.bg}" aria-pressed="${sel.has(i)}">
+      <span class="tick">${ICON.wcheck}</span>${catSVG(pose(o.p,o.c),120,{static:1})}<b>${o.l}</b><small>${o.s}</small></button>`).join('')}</div>
+   ${textBox}
+   <button class="btn" data-next style="margin-top:16px" ${sel.size?'':'disabled'}>Далее</button>`);
+  bindCommon(el);
+  const nb=el.querySelector('[data-next]');
+  el.querySelectorAll('.ch').forEach(b=>b.onclick=()=>{const i=+b.dataset.i; sel.has(i)?sel.delete(i):sel.add(i);
+    b.classList.toggle('sel',sel.has(i)); b.setAttribute('aria-pressed',sel.has(i)); nb.disabled=!sel.size; state.answers[qi]=[...sel]});
+  nb.onclick=()=>{const f=[...sel].map(i=>q.opts[i].fmt); state.lastFmt=f.length===2?'both':f[0]; state.answers[qi]=[...sel]; nextQ()};
+}
+
 function cardsScreen(q,bar,textBox){
   const multi=q.mode==='multi';
   let deck=q.opts.map((o,i)=>i);
@@ -420,20 +439,17 @@ function cardsScreen(q,bar,textBox){
   if(multi) deck=deck.filter(i=>!picked.has(i));
   const el=screen(`${bar}
    <p class="qtitle">${q.title}</p>
-   <p class="muted" style="font-weight:700;font-size:14px">${q.sub?q.sub+' · ':''}свайпни вправо — «про меня», влево — «не то»</p>
-   <div class="stack" id="stack"></div>
+   <p class="muted" style="font-weight:700;font-size:14px">${q.sub?q.sub+' · ':''}смахни карточку пальцем</p>
+   <div class="stack" id="stack"><div class="finger" id="finger" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="rgba(53,51,51,.28)" stroke="#fff" stroke-width="4"/><circle cx="32" cy="32" r="10" fill="#fff"/></svg></div></div>
+   <div class="guide" aria-hidden="true"><span class="gno"><span class="arr">←</span><i>${ICON.wx.replace('#fff','#9A5252')}</i>Не то</span><span class="gyes">Про меня<i>${ICON.wcheck.replace('#fff','#4F7330')}</i><span class="arr">→</span></span></div>
    ${multi?'<div class="picked" id="picked"></div>':''}
-   <div class="cardbtns">
-     <button class="round no" aria-label="Не про меня" data-no>${ICON.x}</button>
-     ${multi?'<button class="btn soft" style="width:auto;padding:12px 18px;font-size:15px" data-done>Готово</button>':''}
-     <button class="round yes" aria-label="Про меня" data-yes>${ICON.check}</button>
-   </div>
+   ${multi?'<button class="btn soft" style="margin-top:10px" data-done>Готово</button>':''}
    ${textBox}`);
   bindCommon(el);
   const stack=el.querySelector('#stack');
   function showPicked(){ if(!multi)return; el.querySelector('#picked').innerHTML=[...picked].map(i=>`<span>${q.opts[i].s?q.opts[i].s.split(',')[0]:q.opts[i].l}</span>`).join('') }
   function build(){
-    stack.innerHTML='';
+    stack.querySelectorAll('.scard').forEach(c=>c.remove());
     const vis=deck.slice(0,3);
     if(!vis.length){
       if(multi){ finish(); return }
@@ -443,27 +459,39 @@ function cardsScreen(q,bar,textBox){
       const depth=vis.length-1-ri; const o=q.opts[oi];
       const c=document.createElement('div'); c.className='scard'+(depth===0?' top':'');
       c.style.background=o.bg; c.style.transform=`translateY(${depth*14}px) scale(${1-depth*.05})`; c.style.zIndex=10-depth;
-      c.innerHTML=`<span class="stamp yes">ПРО МЕНЯ</span><span class="stamp no">НЕ ТО</span>
+      c.innerHTML=`<span class="glow"></span><span class="stamp yes"><i>${ICON.wcheck}</i>Про меня</span><span class="stamp no"><i>${ICON.wx}</i>Не то</span>
         ${catSVG(pose(o.p,o.c),150,{static:depth>0})}<div class="t">${o.l}</div>${o.s?`<div class="s">${o.s}</div>`:''}`;
       c.dataset.oi=oi; stack.appendChild(c);
       if(depth===0) dragCard(c);
     });
+    const top=stack.querySelector('.scard.top');
+    if(top && !touched){ top.classList.add('hint'); if((state.swipes||0)>=3) top.classList.add('once'); fingerOn(true) }
   }
+  function fingerOn(on){const f=el.querySelector('#finger'); if(!f)return; f.classList.remove('on','once'); void f.offsetWidth;
+    if(on){f.classList.add('on'); if((state.swipes||0)>=3) f.classList.add('once')}}
+  function stopHint(){touched=true; stack.querySelectorAll('.hint').forEach(c=>c.classList.remove('hint','once')); fingerOn(false)}
+  function replayHint(){touched=false; const top=stack.querySelector('.scard.top'); if(!top)return;
+    top.classList.remove('hint','once'); top.style.transform=''; void top.offsetWidth; top.classList.add('hint','once');
+    const f=el.querySelector('#finger'); f.classList.remove('on','once'); void f.offsetWidth; f.classList.add('on','once');
+    toast('Смахни карточку вправо или влево'); touched=true}
   function dragCard(c){
     let sx=0,sy=0,dx=0,dy=0,down=false;
-    const yes=c.querySelector('.stamp.yes'), no=c.querySelector('.stamp.no');
-    c.addEventListener('pointerdown',e=>{down=true;sx=e.clientX;sy=e.clientY;c.setPointerCapture(e.pointerId);c.classList.add('dragging')});
+    const yes=c.querySelector('.stamp.yes'), no=c.querySelector('.stamp.no'), glow=c.querySelector('.glow');
+    c.addEventListener('pointerdown',e=>{down=true;sx=e.clientX;sy=e.clientY;dx=0;dy=0;c.setPointerCapture(e.pointerId);
+      const wasHint=c.classList.contains('hint'); stopHint(); c.classList.add('dragging')});
     c.addEventListener('pointermove',e=>{if(!down)return;dx=e.clientX-sx;dy=e.clientY-sy;
       c.style.transform=`translate(${dx}px,${dy*.3}px) rotate(${dx/14}deg)`;
-      yes.style.opacity=clamp(dx/90);no.style.opacity=clamp(-dx/90)});
+      yes.style.opacity=clamp(dx/80);no.style.opacity=clamp(-dx/80);
+      glow.style.background=dx>0?'#9BBB6F':'#C47F7F'; glow.style.opacity=clamp(Math.abs(dx)/80)*.22});
     const up=()=>{if(!down)return;down=false;c.classList.remove('dragging');
-      if(dx>90) decide(true); else if(dx<-90) decide(false);
-      else {c.style.transform='';yes.style.opacity=0;no.style.opacity=0}
+      if(dx>80) decide(true); else if(dx<-80) decide(false);
+      else {c.style.transform='';yes.style.opacity=0;no.style.opacity=0;glow.style.opacity=0; if(Math.abs(dx)<8&&Math.abs(dy)<8) replayHint()}
       dx=0;dy=0};
     c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
   }
-  let busy=false;
+  let busy=false, touched=false;
   function decide(yes){
+    state.swipes=(state.swipes||0)+1;
     if(busy)return; const c=stack.querySelector('.scard.top'); if(!c)return; busy=true;
     const oi=+c.dataset.oi;
     c.querySelector(yes?'.stamp.yes':'.stamp.no').style.opacity=1;
@@ -478,9 +506,7 @@ function cardsScreen(q,bar,textBox){
       } else build();
     },300);
   }
-  function finish(){ if(!picked.size){const ni=q.opts.findIndex(o=>o.none);picked.add(ni)} state.answers[qi]=[...picked]; nextQ() }
-  el.querySelector('[data-yes]').onclick=()=>decide(true);
-  el.querySelector('[data-no]').onclick=()=>decide(false);
+  function finish(){ if(!picked.size){const ni=q.opts.findIndex(o=>o.none);if(ni>=0)picked.add(ni)} state.answers[qi]=[...picked]; nextQ() }
   if(multi) el.querySelector('[data-done]').onclick=finish;
   showPicked(); build();
 }
@@ -523,16 +549,17 @@ SCREENS.loading=function(){
   const m=dayMood(); setTint(m.c);
   screen(`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px">
    <div class="mwrap"><div class="bob">${catSVG(m.pose,200)}</div></div>
-   <h2>Подбираю ${state.lastFmt==='sup'?'тёплые слова':'совет'} для тебя</h2><div class="dots3"><span></span><span></span><span></span></div></div>`);
+   <h2>Подбираю ${state.lastFmt==='sup'?'тёплые слова':state.lastFmt==='both'?'совет и тёплые слова':'совет'} для тебя</h2><div class="dots3"><span></span><span></span><span></span></div></div>`);
   setTimeout(()=>{
     const r=computeRecs();
-    RESULT={fmt:state.lastFmt,mood:m,recs:r,ri:0,sup: state.lastFmt==='sup'?pickSupport():null};
+    RESULT={fmt:state.lastFmt,mood:m,recs:r,ri:0,sup: state.lastFmt!=='rec'?pickSupport():null};
     commitResult(); go('result');
   },1600);
 };
 function commitResult(){
-  const m=RESULT.mood; const title= RESULT.fmt==='sup'?'Поддержка':REC[RESULT.recs.order[RESULT.ri]].t;
-  if(RESULT.fmt==='rec'){state.recHistory.push(RESULT.recs.order[RESULT.ri]); state.lastRec=RESULT.recs.order[RESULT.ri]; state.rated=false}
+  const m=RESULT.mood; const rt=REC[RESULT.recs.order[RESULT.ri]].t;
+  const title= RESULT.fmt==='sup'?'Поддержка':RESULT.fmt==='both'?rt+' + поддержка':rt;
+  if(RESULT.fmt!=='sup'){state.recHistory.push(RESULT.recs.order[RESULT.ri]); state.lastRec=RESULT.recs.order[RESULT.ri]; state.rated=false}
   else {state.lastRec=null}
   state.lastPose=m.pose;
   const ent={date:new Date(today),c:m.c,mood:m.name,rec:title};
@@ -542,13 +569,14 @@ function commitResult(){
 SCREENS.result=function(){
   if(!RESULT){go('home');return}
   const m=RESULT.mood; setTint(m.c);
-  let body;
+  let body='';
+  const supCard=`<div class="rec"><span class="tag" style="background:var(--pink)">Поддержка</span>
+      <div class="mwrap" style="margin:6px 0"><div class="bob">${catSVG(pose('social',C.violet),RESULT.fmt==='both'?110:150)}</div></div>
+      <p style="font-size:17px">${RESULT.sup!=null?SUP[RESULT.sup]():''}</p>
+      <p class="hand" style="text-align:right;margin-top:10px">Ты справишься ♡</p>
+      ${RESULT.fmt==='both'?'<button class="btn soft" data-more style="margin-top:10px;padding:12px">Ещё тёплые слова</button>':''}</div>`;
   if(RESULT.fmt==='sup'){
-    body=`<div class="rec"><span class="tag" style="background:var(--pink)">Поддержка</span>
-      <div class="mwrap" style="margin:6px 0"><div class="bob">${catSVG(pose('social',C.violet),150)}</div></div>
-      <p style="font-size:17px">${SUP[RESULT.sup]()}</p>
-      <p class="hand" style="text-align:right;margin-top:10px">Ты справишься ♡</p></div>
-      <div class="row" style="margin-top:16px"><button class="btn soft" data-more>Ещё слова</button><button class="btn" data-home>Спасибо ♡</button></div>`;
+    body=supCard+`<div class="row" style="margin-top:16px"><button class="btn soft" data-more>Ещё слова</button><button class="btn" data-home>Спасибо ♡</button></div>`;
   } else {
     const k=RESULT.recs.order[RESULT.ri], R=REC[k];
     const reasons=[...new Set(RESULT.recs.why[k])].slice(0,4);
@@ -563,6 +591,7 @@ SCREENS.result=function(){
         ${top.map(x=>`<div class="score"><span style="width:118px">${REC[x].t}</span><span class="bar"><i style="width:${Math.max(4,RESULT.recs.raw[x]/mx*100)}%;background:${REC[x].c}"></i></span></div>`).join('')}
         <ol><li>Каждый ответ добавляет баллы категориям советов (сон, медитация, спорт…)</li><li>Совет, показанный вчера, получает штраф — так советы не повторяются</li><li>Отзыв «полезно / бесполезно» поднимает или опускает категорию</li></ol>
       </details></div>
+      ${RESULT.fmt==='both'?'<div style="height:14px"></div>'+supCard:''}
       <div class="row" style="margin-top:16px"><button class="btn soft" data-other>Другой совет</button><button class="btn" data-home>Сделаю!</button></div>`;
   }
   const el=screen(`<div class="topbar"><button class="iconbtn" aria-label="На главную" data-homeb>${ICON.home}</button>
@@ -602,12 +631,13 @@ function reenter(){
 /* ================= Блок 4: еженедельный опрос ================= */
 let W=[], wi=0;
 function startWeekly(){
-  const sup=state.lastFmt==='sup';
+  const f=state.lastFmt;
+  const recQ={type:'cards',mode:'multi',title:'Как ты оцениваешь наши рекомендации?',sub:'Можно выбрать несколько',
+    opts:[['Полезные','bodr',C.yellow,'var(--sand)'],['Приятные','social',C.violet,'var(--pink)'],['Банальные','sleep',C.purple,'var(--mint)'],['Бессмысленные','angry',C.red,'var(--peach)']].map(([l,p,c,bg])=>({l,p,c,bg}))};
+  const supQ={type:'cards',mode:'multi',title:'Как ты оцениваешь нашу поддержку?',sub:'Можно выбрать несколько',
+    opts:[['Комфортная','bodr',C.yellow,'var(--sand)'],['Актуальная','social',C.violet,'var(--lav)'],['Демотивирующая','tired',C.grey,'var(--peach)'],['Однотипная','sleep',C.purple,'var(--mint)']].map(([l,p,c,bg])=>({l,p,c,bg}))};
   W=[
-   {type:'cards',mode:'multi',title: sup?'Как ты оцениваешь нашу поддержку?':'Как ты оцениваешь наши рекомендации?',sub:'Можно выбрать несколько',
-    opts:(sup?[['Комфортная','bodr',C.yellow,'var(--sand)'],['Актуальная','social',C.violet,'var(--lav)'],['Демотивирующая','tired',C.grey,'var(--peach)'],['Однотипная','sleep',C.purple,'var(--mint)']]
-             :[['Полезные','bodr',C.yellow,'var(--sand)'],['Приятные','social',C.violet,'var(--pink)'],['Банальные','sleep',C.purple,'var(--mint)'],['Бессмысленные','angry',C.red,'var(--peach)']])
-         .map(([l,p,c,bg])=>({l,p,c,bg}))},
+   ...(f==='sup'?[supQ]:f==='both'?[recQ,supQ]:[recQ]),
    {type:'slider',title:G('Как часто ты выполнял наши рекомендации?','Как часто ты выполняла наши рекомендации?'),init:1,opts:[
      {l:G('Я не выполнял рекомендации','Я не выполняла рекомендации'),short:'Никогда',p:'sleep',mood:'Сонливость',c:C.purple},
      {l:G('Выполнил меньше половины','Выполнила меньше половины'),short:'< половины',p:'tired',mood:'Усталость',c:C.grey},
